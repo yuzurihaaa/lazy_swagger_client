@@ -3,12 +3,12 @@ package swagger
 import (
 	"context"
 	"fmt"
+	"github.com/yuzurihaaa/lazy_swagger_client/src/utilities"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-	"swagger_client/src/utilities"
 	"time"
 )
 
