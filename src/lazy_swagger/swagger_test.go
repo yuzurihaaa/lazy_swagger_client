@@ -1,4 +1,4 @@
-package swagger
+package lazy_swagger
 
 import (
 	"reflect"
