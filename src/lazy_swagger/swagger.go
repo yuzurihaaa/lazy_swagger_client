@@ -19,8 +19,15 @@ type Swagger struct {
 
 type Config struct {
 	Transport http.RoundTripper
+	// http, https
 	Scheme    string
+
+	// host url without http prefix. https://google.com will be google.com
 	Host      string
+
+	// subdomain. https://google.com/sub/domain will be /sub/domain. You might want to take a look at swagger definition if
+	// for path. If it's already there in path /sub/domain/your-endpoint-here then leave it empty.
+	Path      string
 }
 
 type Out struct {
@@ -57,9 +64,9 @@ func NewSwagger(in map[string]interface{}) *Swagger {
 }
 
 type Args struct {
-	Body  io.Reader
-	Path  map[string]any
-	Query map[string]string
+	Body        io.Reader
+	PathParams  map[string]any
+	QueryParams map[string]string
 }
 
 func (s *Swagger) UpdateConfig(c Config) {
@@ -70,16 +77,16 @@ func (s *Swagger) Execute(ctx context.Context, operationId string, arg Args) (*h
 	out := s.Cache[operationId]
 
 	query := url.Values{}
-	if len(arg.Query) > 0 {
-		for q := range arg.Query {
-			query.Set(q, arg.Query[q])
+	if len(arg.QueryParams) > 0 {
+		for q := range arg.QueryParams {
+			query.Set(q, arg.QueryParams[q])
 		}
 	}
 
 	outUrl := url.URL{
 		Scheme:   s.Scheme,
 		Host:     s.Host,
-		Path:     buildUrl(out.Url, arg.Path),
+		Path:     s.Path + buildUrl(out.Url, arg.PathParams),
 		RawQuery: query.Encode(),
 	}
 
