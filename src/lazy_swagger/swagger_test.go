@@ -59,7 +59,7 @@ func TestNewSwaggerF(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewSwaggerF(tt.f); !reflect.DeepEqual(got, tt.want) {
+			if got := NewSwaggerF(tt.f, Config{}); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewSwaggerF() = %v, want %v", got, tt.want)
 			}
 		})

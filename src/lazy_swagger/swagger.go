@@ -20,14 +20,14 @@ type Swagger struct {
 type Config struct {
 	Transport http.RoundTripper
 	// http, https
-	Scheme    string
+	Scheme string
 
 	// host url without http prefix. https://google.com will be google.com
-	Host      string
+	Host string
 
 	// subdomain. https://google.com/sub/domain will be /sub/domain. You might want to take a look at swagger definition if
 	// for path. If it's already there in path /sub/domain/your-endpoint-here then leave it empty.
-	Path      string
+	Path string
 }
 
 type Out struct {
@@ -38,7 +38,7 @@ type Out struct {
 // NewSwaggerF
 // Constructor
 // Read swagger files and map to Cache
-func NewSwaggerF(f string) *Swagger {
+func NewSwaggerF(f string, config Config) *Swagger {
 	jsonFile, err := os.Open(f)
 	if err != nil {
 		fmt.Println(err)
@@ -46,20 +46,21 @@ func NewSwaggerF(f string) *Swagger {
 	}
 	byteValue, _ := io.ReadAll(jsonFile)
 	swaggerMap := utilities.JsonUnmarshal[map[string]interface{}](byteValue)
-	return NewSwagger(swaggerMap)
+	return NewSwagger(swaggerMap, config)
 }
 
 // NewSwagger
 // Constructor
 // Read swagger json and map to Cache
-func NewSwagger(in map[string]interface{}) *Swagger {
+func NewSwagger(in map[string]interface{}, config Config) *Swagger {
 	paths, ok := in["paths"].(map[string]interface{})
 	if !ok {
 		return nil
 	}
 	cache := buildCache(paths)
 	return &Swagger{
-		Cache: cache,
+		Cache:  cache,
+		Config: config,
 	}
 }
 
