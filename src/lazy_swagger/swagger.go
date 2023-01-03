@@ -28,6 +28,8 @@ type Config struct {
 	// subdomain. https://google.com/sub/domain will be /sub/domain. You might want to take a look at swagger definition if
 	// for path. If it's already there in path /sub/domain/your-endpoint-here then leave it empty.
 	Path string
+
+	DefaultHeader map[string][]string
 }
 
 type Out struct {
@@ -66,6 +68,7 @@ func NewSwagger(in map[string]interface{}, config Config) *Swagger {
 
 type Args struct {
 	Body        io.Reader
+	Header      map[string][]string
 	PathParams  map[string]any
 	QueryParams map[string]any
 }
@@ -92,6 +95,10 @@ func (s *Swagger) Execute(ctx context.Context, operationId string, arg Args) (*h
 	}
 
 	req, err := http.NewRequestWithContext(ctx, out.Method, outUrl.String(), arg.Body)
+	headers := utilities.MergeMaps(arg.Header, s.DefaultHeader)
+	for key, value := range headers {
+		req.Header[key] = value
+	}
 	if err != nil {
 		return nil, err
 	}
