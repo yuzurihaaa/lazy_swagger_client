@@ -67,7 +67,7 @@ func NewSwagger(in map[string]interface{}, config Config) *Swagger {
 type Args struct {
 	Body        io.Reader
 	PathParams  map[string]any
-	QueryParams map[string]string
+	QueryParams map[string]any
 }
 
 func (s *Swagger) UpdateConfig(c Config) {
@@ -80,7 +80,7 @@ func (s *Swagger) Execute(ctx context.Context, operationId string, arg Args) (*h
 	query := url.Values{}
 	if len(arg.QueryParams) > 0 {
 		for q := range arg.QueryParams {
-			query.Set(q, arg.QueryParams[q])
+			query.Set(q, fmt.Sprintf("%v", arg.QueryParams[q]))
 		}
 	}
 
