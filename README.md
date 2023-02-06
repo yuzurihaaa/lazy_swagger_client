@@ -22,5 +22,4 @@ If you want something that is type-safety, use other libraries.
         // handle response here.
    }
    ```
-3. 
     

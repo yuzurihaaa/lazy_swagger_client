@@ -43,10 +43,14 @@ type Out struct {
 func NewSwaggerF(f string, config Config) *Swagger {
 	jsonFile, err := os.Open(f)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fmt.Sprintf("Swagger initialization failed due to %v", err))
 		return nil
 	}
-	byteValue, _ := io.ReadAll(jsonFile)
+	byteValue, err := io.ReadAll(jsonFile)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Swagger initialization failed due to %v", err))
+		return nil
+	}
 	swaggerMap := utilities.JsonUnmarshal[map[string]interface{}](byteValue)
 	return NewSwagger(swaggerMap, config)
 }
@@ -57,8 +61,10 @@ func NewSwaggerF(f string, config Config) *Swagger {
 func NewSwagger(in map[string]interface{}, config Config) *Swagger {
 	paths, ok := in["paths"].(map[string]interface{})
 	if !ok {
+		fmt.Println(fmt.Sprintf("paths not found in %v", in))
 		return nil
 	}
+	fmt.Println(fmt.Sprintf("Initializing swagger client"))
 	cache := buildCache(paths)
 	return &Swagger{
 		Cache:  cache,
