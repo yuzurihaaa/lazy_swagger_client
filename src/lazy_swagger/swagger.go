@@ -12,6 +12,11 @@ import (
 	"time"
 )
 
+type SwaggerClient interface {
+	UpdateConfig(c Config)
+	Execute(ctx context.Context, operationId string, arg Args) (*http.Response, error)
+}
+
 type Swagger struct {
 	Cache map[string]Out
 	Config
@@ -40,7 +45,7 @@ type Out struct {
 // NewSwaggerF
 // Constructor
 // Read swagger files and map to Cache
-func NewSwaggerF(f string, config Config) *Swagger {
+func NewSwaggerF(f string, config Config) SwaggerClient {
 	jsonFile, err := os.Open(f)
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Swagger initialization failed due to %v", err))
@@ -58,7 +63,7 @@ func NewSwaggerF(f string, config Config) *Swagger {
 // NewSwagger
 // Constructor
 // Read swagger json and map to Cache
-func NewSwagger(in map[string]interface{}, config Config) *Swagger {
+func NewSwagger(in map[string]interface{}, config Config) SwaggerClient {
 	paths, ok := in["paths"].(map[string]interface{})
 	if !ok {
 		fmt.Println(fmt.Sprintf("paths not found in %v", in))
